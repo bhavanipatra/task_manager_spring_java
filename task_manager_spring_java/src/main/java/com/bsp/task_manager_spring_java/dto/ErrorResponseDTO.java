@@ -4,12 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Data
-public class CreateTaskDTO {
-    private String title;
-    private String description;
-    private String deadline;
+public class ErrorResponseDTO {
+    private String error;
 }
