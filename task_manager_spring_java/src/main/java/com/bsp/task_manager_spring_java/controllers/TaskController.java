@@ -2,6 +2,7 @@ package com.bsp.task_manager_spring_java.controllers;
 
 import com.bsp.task_manager_spring_java.dto.CreateTaskDTO;
 import com.bsp.task_manager_spring_java.dto.ErrorResponseDTO;
+import com.bsp.task_manager_spring_java.dto.UpdateTaskDTO;
 import com.bsp.task_manager_spring_java.entities.TaskEntity;
 import com.bsp.task_manager_spring_java.service.TaskService;
 import org.springframework.http.ResponseEntity;
@@ -34,10 +35,15 @@ public class TaskController {
 
     @PostMapping("")
     public ResponseEntity<TaskEntity> addTask(@RequestBody CreateTaskDTO body) throws ParseException{
-        var task = taskService.addTask(body.getTitle(), body.getDescription(), body.getDeadline());
+        var task = taskService.addTask(body);
         return ResponseEntity.ok(task);
     }
 
+    @PatchMapping("/{id}")
+    public ResponseEntity<TaskEntity> updateTask(@PathVariable("id") Integer taskId, @RequestBody UpdateTaskDTO body) throws ParseException {
+        TaskEntity updatedTask = taskService.updateTask(taskId, body);
+        return ResponseEntity.ok(updatedTask);
+    }
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDTO> handleException(Exception e) {
         if (e instanceof ParseException) {
