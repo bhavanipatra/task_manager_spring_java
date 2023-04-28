@@ -42,6 +42,7 @@ public class TaskController {
     @PatchMapping("/{id}")
     public ResponseEntity<TaskEntity> updateTask(@PathVariable("id") Integer taskId, @RequestBody UpdateTaskDTO body) throws ParseException {
         TaskEntity updatedTask = taskService.updateTask(taskId, body);
+        if (updatedTask == null) return ResponseEntity.notFound().build();
         return ResponseEntity.ok(updatedTask);
     }
     @ExceptionHandler(Exception.class)
