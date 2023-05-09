@@ -1,6 +1,7 @@
 package com.bsp.task_manager_spring_java.service;
 
 import com.bsp.task_manager_spring_java.dto.CreateTaskDTO;
+import com.bsp.task_manager_spring_java.dto.TaskResponseDTO;
 import com.bsp.task_manager_spring_java.dto.UpdateTaskDTO;
 import com.bsp.task_manager_spring_java.entities.TaskEntity;
 import org.springframework.scheduling.config.Task;
@@ -45,6 +46,13 @@ public class TaskService {
         if (body.getDescription() != null) task.setDescription(body.getDescription());
         if (body.isCompleted() != task.isCompleted()) task.setCompleted(body.isCompleted());
         if (body.getDeadline() != null) task.setDeadline(body.getDeadline());
+        return task;
+    }
+
+    public TaskEntity deleteTask (int taskId) throws ParseException {
+        TaskEntity task = getTaskById(taskId);
+        if (task == null) return null;
+        tasks.remove(task);
         return task;
     }
 }
