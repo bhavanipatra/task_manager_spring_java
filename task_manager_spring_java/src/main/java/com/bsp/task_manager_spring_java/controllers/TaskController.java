@@ -2,9 +2,13 @@ package com.bsp.task_manager_spring_java.controllers;
 
 import com.bsp.task_manager_spring_java.dto.CreateTaskDTO;
 import com.bsp.task_manager_spring_java.dto.ErrorResponseDTO;
+import com.bsp.task_manager_spring_java.dto.TaskResponseDTO;
 import com.bsp.task_manager_spring_java.dto.UpdateTaskDTO;
 import com.bsp.task_manager_spring_java.entities.TaskEntity;
+import com.bsp.task_manager_spring_java.service.NoteService;
 import com.bsp.task_manager_spring_java.service.TaskService;
+import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,22 +19,28 @@ import java.util.List;
 @RequestMapping("/tasks")
 public class TaskController {
     private final TaskService taskService;
-
-    public TaskController(TaskService taskService) {
+    private final NoteService noteService;
+    private ModelMapper modelMapper = new ModelMapper();
+    public TaskController(TaskService taskService, NoteService noteService) {
         this.taskService = taskService;
+        this.noteService = noteService;
     }
 
     @GetMapping("")
     public ResponseEntity<List<TaskEntity>> getTasks() {
         var tasks = taskService.getTasks();
+        if (tasks.isEmpty()) return ResponseEntity.notFound().build();
         return ResponseEntity.ok(tasks);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TaskEntity> getTaskById(@PathVariable("id") Integer taskId) {
+    public ResponseEntity<TaskResponseDTO> getTaskById(@PathVariable("id") Integer taskId) {
         var task = taskService.getTaskById(taskId);
+        var notes = noteService.getNotesForTask(taskId);
         if (task == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(task);
+        var taskResponse = modelMapper.map(task, TaskResponseDTO.class);
+        taskResponse.setNotes(notes);
+        return ResponseEntity.ok(taskResponse);
     }
 
     @PostMapping("")
@@ -44,6 +54,12 @@ public class TaskController {
         TaskEntity updatedTask = taskService.updateTask(taskId, body);
         if (updatedTask == null) return ResponseEntity.notFound().build();
         return ResponseEntity.ok(updatedTask);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<TaskEntity> deleteTask(@PathVariable("id") Integer taskId) throws ParseException {
+        TaskEntity deletedTask = taskService.deleteTask(taskId);
+        return ResponseEntity.ok(deletedTask);
     }
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDTO> handleException(Exception e) {

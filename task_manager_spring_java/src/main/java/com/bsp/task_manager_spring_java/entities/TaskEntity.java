@@ -3,7 +3,6 @@ package com.bsp.task_manager_spring_java.entities;
 import lombok.Data;
 
 import java.util.Date;
-
 @Data
 public class TaskEntity {
     private int id;
